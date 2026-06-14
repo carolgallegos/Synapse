@@ -1,0 +1,134 @@
+{
+  "events": [
+    {
+      "event_id": "evt-001",
+      "timestamp": "2026-06-13T08:00:00Z",
+      "sourcetype": "deployment",
+      "source": "ci/cd",
+      "host": "deploy-runner-01",
+      "service": "authentication service",
+      "event_type": "deployment",
+      "message": "Deployment v4.2 completed for Authentication Service in production cluster"
+    },
+    {
+      "event_id": "evt-002",
+      "timestamp": "2026-06-13T08:15:00Z",
+      "sourcetype": "metrics",
+      "source": "apm",
+      "host": "auth-prod-01",
+      "service": "authentication service",
+      "event_type": "latency spike",
+      "message": "Authentication Service latency increased by 320% compared to baseline"
+    },
+    {
+      "event_id": "evt-003",
+      "timestamp": "2026-06-13T08:22:00Z",
+      "sourcetype": "logs",
+      "source": "login-service",
+      "host": "login-prod-02",
+      "service": "login service",
+      "event_type": "login failure",
+      "message": "Login failures spiked: Authentication Failure causes Login Errors across customer portal"
+    },
+    {
+      "event_id": "evt-004",
+      "timestamp": "2026-06-13T08:35:00Z",
+      "sourcetype": "metrics",
+      "source": "apm",
+      "host": "portal-prod-01",
+      "service": "customer portal",
+      "event_type": "error rate",
+      "message": "Customer portal error rate exceeded threshold after login service degradation"
+    },
+    {
+      "event_id": "evt-005",
+      "timestamp": "2026-06-13T09:00:00Z",
+      "sourcetype": "tickets",
+      "source": "zendesk",
+      "host": "support-bridge",
+      "service": "customer portal",
+      "event_type": "ticket",
+      "message": "Support ticket volume increased 240% related to login and checkout issues"
+    },
+    {
+      "event_id": "evt-006",
+      "timestamp": "2026-06-13T09:30:00Z",
+      "sourcetype": "feedback",
+      "source": "nps",
+      "host": "feedback-api",
+      "service": "customer portal",
+      "event_type": "complaint",
+      "message": "Customer complaints increasing due to authentication timeouts and failed logins"
+    },
+    {
+      "event_id": "evt-007",
+      "timestamp": "2026-06-13T07:55:00Z",
+      "sourcetype": "topology",
+      "source": "cmdb",
+      "host": "cmdb-sync",
+      "service": "authentication service",
+      "event_type": "dependency",
+      "message": "Authentication Service depends on Database Cluster for session validation"
+    },
+    {
+      "event_id": "evt-008",
+      "timestamp": "2026-06-13T10:00:00Z",
+      "sourcetype": "metrics",
+      "source": "apm",
+      "host": "payment-api-01",
+      "service": "payment api",
+      "event_type": "latency spike",
+      "message": "Payment API latency rising with increasing error rate — similar pattern observed before previous outages"
+    },
+    {
+      "event_id": "hist-001",
+      "timestamp": "2026-03-12T14:10:00Z",
+      "sourcetype": "incident",
+      "source": "pagerduty",
+      "host": "incident-bridge",
+      "service": "authentication service",
+      "event_type": "incident",
+      "message": "INC-2841: Deployment v3.9 caused Authentication Failure and Login Errors — resolved after rollback"
+    },
+    {
+      "event_id": "hist-002",
+      "timestamp": "2026-04-03T11:40:00Z",
+      "sourcetype": "incident",
+      "source": "pagerduty",
+      "host": "incident-bridge",
+      "service": "authentication service",
+      "event_type": "incident",
+      "message": "INC-2910: Similar incident — deployment followed by auth latency spike and customer portal errors"
+    },
+    {
+      "event_id": "hist-003",
+      "timestamp": "2026-02-18T09:20:00Z",
+      "sourcetype": "incident",
+      "source": "pagerduty",
+      "host": "incident-bridge",
+      "service": "payment api",
+      "event_type": "incident",
+      "message": "INC-2765: Payment API outage preceded by rising latency and error rate pattern"
+    }
+  ],
+  "historical_incidents": [
+    {
+      "incident_id": "INC-2841",
+      "date": "2026-03-12",
+      "summary": "Deployment v3.9 caused authentication failures and login errors",
+      "topology": ["deployment:v4-2", "service:authentication-service", "event:login-failure", "service:customer-portal"]
+    },
+    {
+      "incident_id": "INC-2910",
+      "date": "2026-04-03",
+      "summary": "Deployment followed by auth latency spike and portal errors",
+      "topology": ["deployment:v4-2", "service:authentication-service", "event:latency-spike", "service:login-service"]
+    },
+    {
+      "incident_id": "INC-2765",
+      "date": "2026-02-18",
+      "summary": "Payment API outage after latency and error rate degradation",
+      "topology": ["service:payment-api", "event:latency-spike", "event:error-rate"]
+    }
+  ]
+}
