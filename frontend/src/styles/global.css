@@ -56,6 +56,153 @@ input {
   position: sticky;
   top: 0;
   z-index: 10;
+  gap: 1rem;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.export-btn {
+  background: transparent;
+  border: 1px solid var(--accent-dim);
+  color: var(--accent);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-btn:hover {
+  background: rgba(101, 163, 13, 0.12);
+}
+
+.query-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: -0.35rem 0 1rem;
+}
+
+.query-chip {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.72rem;
+  cursor: pointer;
+  max-width: 100%;
+  text-align: left;
+}
+
+.query-chip:hover,
+.query-chip-active {
+  color: var(--text);
+  border-color: var(--accent-dim);
+  background: rgba(101, 163, 13, 0.1);
+}
+
+.panel-body-tight {
+  padding-top: 0.65rem;
+  padding-bottom: 0.85rem;
+}
+
+.graph-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zoom-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-family: var(--mono);
+}
+
+.graph-node-selected .node-card-story {
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.55));
+}
+
+.evidence-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.evidence-item-active {
+  border-color: rgba(101, 163, 13, 0.55);
+  background: rgba(101, 163, 13, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(101, 163, 13, 0.15);
+}
+
+.incident-timeline {
+  padding: 0.25rem 0 0.5rem;
+}
+
+.timeline-track {
+  position: relative;
+  height: 28px;
+  margin: 0 0.5rem 0.75rem;
+  border-top: 2px solid var(--border);
+}
+
+.timeline-dot {
+  position: absolute;
+  top: -9px;
+  transform: translateX(-50%);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.timeline-dot-inner {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  border: 2px solid var(--accent-dim);
+}
+
+.timeline-dot-active .timeline-dot-inner,
+.timeline-dot:hover .timeline-dot-inner {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(101, 163, 13, 0.5);
+}
+
+.timeline-labels {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.timeline-label {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.timeline-label time {
+  font-family: var(--mono);
+  color: var(--accent);
+}
+
+.timeline-filter-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 .brand {
@@ -224,13 +371,67 @@ input {
   border-radius: 8px;
   border: 1px solid var(--border);
   position: relative;
-  overflow-x: auto;
+  overflow: hidden;
+}
+
+.graph-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0.65rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(15, 20, 28, 0.85);
+}
+
+.graph-hint {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.graph-reset {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.68rem;
+  cursor: pointer;
+}
+
+.graph-reset:hover {
+  color: var(--text);
+  border-color: var(--accent-dim);
 }
 
 .graph-svg {
   width: 100%;
-  min-width: 720px;
-  height: 300px;
+  height: 280px;
+  display: block;
+}
+
+.graph-node {
+  cursor: grab;
+}
+
+.graph-node:active {
+  cursor: grabbing;
+}
+
+.graph-node-active .node-card-story {
+  filter: drop-shadow(0 0 10px rgba(101, 163, 13, 0.45));
+}
+
+.edge-active .edge-line-story {
+  stroke: #84cc16;
+  stroke-width: 2.5;
+}
+
+.edge-label-bg {
+  fill: rgba(15, 20, 28, 0.92);
+  stroke: rgba(101, 163, 13, 0.25);
+  stroke-width: 1;
 }
 
 .node-card {
@@ -314,13 +515,6 @@ input {
   overflow: auto;
 }
 
-.evidence-item {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.65rem 0.75rem;
-  background: var(--bg-elevated);
-}
-
 .evidence-meta {
   display: flex;
   flex-wrap: wrap;
@@ -380,6 +574,13 @@ input {
 
 .metric strong {
   font-size: 1.1rem;
+}
+
+.risk-banner-note {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  color: #fca5a5;
+  opacity: 0.85;
 }
 
 .risk-banner {

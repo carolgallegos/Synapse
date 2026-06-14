@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   analyzeQuestion,
   fetchHealth,
@@ -8,10 +8,19 @@ import {
 } from "./api";
 import { CausalGraph } from "./components/CausalGraph";
 import { EvidencePanel } from "./components/EvidencePanel";
+import { IncidentTimeline } from "./components/IncidentTimeline";
+import { buildIncidentReport, downloadReport } from "./utils/exportReport";
+import { eventMatchesNodeLoose } from "./utils/nodeEvidence";
 
 type ReportTab = "executive" | "technical";
 
 const DEFAULT_QUERY = "Why are customer complaints increasing?";
+
+const DEMO_QUERIES = [
+  "Why are customer complaints increasing?",
+  "What caused the authentication degradation?",
+  "Which services are affected by the deployment?",
+];
 
 export default function App() {
   const [question, setQuestion] = useState(DEFAULT_QUERY);
@@ -20,9 +29,13 @@ export default function App() {
   const [tab, setTab] = useState<ReportTab>("executive");
   const [loading, setLoading] = useState(false);
   const [health, setHealth] = useState<{ splunk_mode: string; graph_nodes: number } | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   async function runAnalysis(query: string) {
     setLoading(true);
+    setSelectedNodeId(null);
+    setSelectedEventId(null);
     try {
       const [result, riskResult] = await Promise.all([analyzeQuestion(query), fetchRisk()]);
       setReport(result);
@@ -37,6 +50,50 @@ export default function App() {
     runAnalysis(DEFAULT_QUERY);
   }, []);
 
+  function handleNodeSelect(nodeId: string) {
+    setSelectedNodeId(nodeId);
+    if (!report) return;
+    let bestId: string | null = null;
+    let bestScore = 0;
+    for (const event of report.related_events) {
+      const score = eventMatchesNodeLoose(nodeId, event);
+      if (score > bestScore) {
+        bestScore = score;
+        bestId = event.event_id;
+      }
+    }
+    setSelectedEventId(bestId);
+  }
+
+  function handleEventSelect(eventId: string) {
+    setSelectedEventId(eventId);
+    if (!report) return;
+    const event = report.related_events.find((e) => e.event_id === eventId);
+    if (!event) return;
+    let bestNode: string | null = null;
+    let bestScore = 0;
+    for (const node of report.graph_nodes) {
+      const score = eventMatchesNodeLoose(node.id, event);
+      if (score > bestScore) {
+        bestScore = score;
+        bestNode = node.id;
+      }
+    }
+    if (bestNode) setSelectedNodeId(bestNode);
+  }
+
+  function handleExport() {
+    if (!report) return;
+    const content = buildIncidentReport(report, risk, tab);
+    downloadReport(content, `synapse-incident-${Date.now()}.md`);
+  }
+
+  const timelineEvents = useMemo(() => {
+    if (!report) return [];
+    if (!selectedNodeId) return report.related_events;
+    return report.related_events.filter((e) => eventMatchesNodeLoose(selectedNodeId, e) > 0);
+  }, [report, selectedNodeId]);
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -47,10 +104,17 @@ export default function App() {
             <p>Every incident tells a story. Synapse connects the dots.</p>
           </div>
         </div>
-        <div className="status-pill">
-          <span className="status-dot" />
-          Splunk {health?.splunk_mode ?? "…"}
-          {report ? ` · ${report.graph_nodes.length}-step incident chain` : ""}
+        <div className="topbar-actions">
+          {report && (
+            <button type="button" className="export-btn" onClick={handleExport}>
+              Export report
+            </button>
+          )}
+          <div className="status-pill">
+            <span className="status-dot" />
+            Splunk {health?.splunk_mode ?? "…"}
+            {report ? ` · ${report.graph_nodes.length}-step chain` : ""}
+          </div>
         </div>
       </header>
 
@@ -68,6 +132,22 @@ export default function App() {
             </button>
           </div>
 
+          <div className="query-chips">
+            {DEMO_QUERIES.map((q) => (
+              <button
+                key={q}
+                type="button"
+                className={`query-chip ${question === q ? "query-chip-active" : ""}`}
+                onClick={() => {
+                  setQuestion(q);
+                  runAnalysis(q);
+                }}
+              >
+                {q}
+              </button>
+            ))}
+          </div>
+
           {report ? (
             <>
               <div className="root-cause">
@@ -78,18 +158,43 @@ export default function App() {
               <div className="panel">
                 <div className="panel-header">
                   <div>
+                    <h2>Incident Timeline</h2>
+                    <p className="panel-subtitle">Chronological Splunk events</p>
+                  </div>
+                </div>
+                <div className="panel-body panel-body-tight">
+                  <IncidentTimeline
+                    events={timelineEvents.length ? timelineEvents : report.related_events}
+                    selectedNodeId={selectedNodeId}
+                    selectedEventId={selectedEventId}
+                    onSelectEvent={handleEventSelect}
+                  />
+                </div>
+              </div>
+
+              <div className="panel">
+                <div className="panel-header">
+                  <div>
                     <h2>Operational Knowledge Graph</h2>
-                    <p className="panel-subtitle">Incident propagation path</p>
+                    <p className="panel-subtitle">
+                      {selectedNodeId ? "Node selected — evidence linked below" : "Incident propagation path"}
+                    </p>
                   </div>
                 </div>
                 <div className="panel-body">
-                  <CausalGraph nodes={report.graph_nodes} edges={report.graph_edges} />
+                  <CausalGraph
+                    nodes={report.graph_nodes}
+                    edges={report.graph_edges}
+                    selectedNodeId={selectedNodeId}
+                    onNodeSelect={handleNodeSelect}
+                  />
                 </div>
               </div>
 
               {risk && (
                 <div className="risk-banner">
-                  <h3>Predictive Signal — {risk.service}</h3>
+                  <h3>Early Warning — {risk.service}</h3>
+                  <p className="risk-banner-note">Separate signal · not part of the current complaint incident</p>
                   <p>{risk.recommendation}</p>
                   <ul>
                     {risk.reasons.map((reason) => (
@@ -186,9 +291,7 @@ export default function App() {
             <div className="panel-body">
               {report ? (
                 <p className="summary-text">
-                  {tab === "executive"
-                    ? report.executive_summary.body
-                    : report.technical_summary.body}
+                  {tab === "executive" ? report.executive_summary.body : report.technical_summary.body}
                 </p>
               ) : (
                 <p className="summary-text">—</p>
@@ -199,9 +302,21 @@ export default function App() {
           <div className="panel">
             <div className="panel-header">
               <h2>Splunk Evidence</h2>
+              {selectedNodeId && (
+                <button type="button" className="graph-reset" onClick={() => setSelectedNodeId(null)}>
+                  Clear filter
+                </button>
+              )}
             </div>
             <div className="panel-body">
-              {report ? <EvidencePanel events={report.related_events} /> : null}
+              {report ? (
+                <EvidencePanel
+                  events={report.related_events}
+                  selectedNodeId={selectedNodeId}
+                  selectedEventId={selectedEventId}
+                  onSelectEvent={handleEventSelect}
+                />
+              ) : null}
             </div>
           </div>
         </aside>

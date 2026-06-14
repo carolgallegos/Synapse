@@ -1,0 +1,55 @@
+import type { SplunkEvidence } from "../api";
+import { shortEventLabel } from "../utils/nodeEvidence";
+
+interface Props {
+  events: SplunkEvidence[];
+  selectedNodeId: string | null;
+  selectedEventId: string | null;
+  onSelectEvent: (eventId: string) => void;
+}
+
+export function IncidentTimeline({ events, selectedNodeId, selectedEventId, onSelectEvent }: Props) {
+  const sorted = [...events].sort(
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+  );
+
+  if (!sorted.length) return null;
+
+  const start = new Date(sorted[0].timestamp).getTime();
+  const end = new Date(sorted[sorted.length - 1].timestamp).getTime();
+  const span = Math.max(end - start, 1);
+
+  return (
+    <div className="incident-timeline">
+      <div className="timeline-track">
+        {sorted.map((event) => {
+          const pct = ((new Date(event.timestamp).getTime() - start) / span) * 100;
+          const active = selectedEventId === event.event_id;
+          return (
+            <button
+              key={event.event_id}
+              type="button"
+              className={`timeline-dot ${active ? "timeline-dot-active" : ""}`}
+              style={{ left: `${Math.min(Math.max(pct, 4), 96)}%` }}
+              title={event.message}
+              onClick={() => onSelectEvent(event.event_id)}
+            >
+              <span className="timeline-dot-inner" />
+            </button>
+          );
+        })}
+      </div>
+      <div className="timeline-labels">
+        {sorted.map((event) => (
+          <div className="timeline-label" key={`label-${event.event_id}`}>
+            <time>{new Date(event.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
+            <span>{shortEventLabel(event.message)}</span>
+          </div>
+        ))}
+      </div>
+      {selectedNodeId && (
+        <p className="timeline-filter-note">Timeline filtered by selected graph node</p>
+      )}
+    </div>
+  );
+}
