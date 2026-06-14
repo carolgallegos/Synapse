@@ -49,7 +49,8 @@ export default function App() {
         </div>
         <div className="status-pill">
           <span className="status-dot" />
-          Splunk {health?.splunk_mode ?? "…"} · {health?.graph_nodes ?? 0} graph nodes
+          Splunk {health?.splunk_mode ?? "…"}
+          {report ? ` · ${report.graph_nodes.length}-step incident chain` : ""}
         </div>
       </header>
 
@@ -76,7 +77,10 @@ export default function App() {
 
               <div className="panel">
                 <div className="panel-header">
-                  <h2>Operational Knowledge Graph</h2>
+                  <div>
+                    <h2>Operational Knowledge Graph</h2>
+                    <p className="panel-subtitle">Incident propagation path</p>
+                  </div>
                 </div>
                 <div className="panel-body">
                   <CausalGraph nodes={report.graph_nodes} edges={report.graph_edges} />
@@ -101,36 +105,21 @@ export default function App() {
         </section>
 
         <aside className="side-stack">
-          <div className="panel">
+          <div className="panel panel-highlight">
             <div className="panel-header">
-              <h2>Report</h2>
-              <div className="tabs">
-                <button
-                  type="button"
-                  className={`tab ${tab === "executive" ? "active" : ""}`}
-                  onClick={() => setTab("executive")}
-                >
-                  Executive
-                </button>
-                <button
-                  type="button"
-                  className={`tab ${tab === "technical" ? "active" : ""}`}
-                  onClick={() => setTab("technical")}
-                >
-                  Technical
-                </button>
-              </div>
+              <h2>Causal Chain</h2>
             </div>
             <div className="panel-body">
-              {report ? (
-                <p className="summary-text">
-                  {tab === "executive"
-                    ? report.executive_summary.body
-                    : report.technical_summary.body}
-                </p>
-              ) : (
-                <p className="summary-text">—</p>
-              )}
+              {report?.causal_chain.map((link) => (
+                <div className="chain-item" key={`${link.from_label}-${link.to_label}`}>
+                  <strong>{link.from_label}</strong>
+                  <span style={{ color: "var(--text-muted)" }}> → {link.relation.replace(/_/g, " ")} → </span>
+                  <strong>{link.to_label}</strong>
+                  <p className="summary-text" style={{ fontSize: "0.78rem", marginTop: "0.25rem" }}>
+                    {link.evidence.length} Splunk event{link.evidence.length === 1 ? "" : "s"}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -161,24 +150,6 @@ export default function App() {
 
           <div className="panel">
             <div className="panel-header">
-              <h2>Causal Chain</h2>
-            </div>
-            <div className="panel-body">
-              {report?.causal_chain.map((link) => (
-                <div className="chain-item" key={`${link.from_label}-${link.to_label}`}>
-                  <strong>{link.from_label}</strong>
-                  <span style={{ color: "var(--text-muted)" }}> → {link.relation.replace(/_/g, " ")} → </span>
-                  <strong>{link.to_label}</strong>
-                  <p className="summary-text" style={{ fontSize: "0.78rem", marginTop: "0.25rem" }}>
-                    {link.evidence.length} Splunk event{link.evidence.length === 1 ? "" : "s"}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="panel">
-            <div className="panel-header">
               <h2>Historical Patterns</h2>
             </div>
             <div className="panel-body">
@@ -189,6 +160,39 @@ export default function App() {
                   <span className="status-pill">{Math.round(match.similarity * 100)}% topology match</span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="panel">
+            <div className="panel-header">
+              <h2>Report</h2>
+              <div className="tabs">
+                <button
+                  type="button"
+                  className={`tab ${tab === "executive" ? "active" : ""}`}
+                  onClick={() => setTab("executive")}
+                >
+                  Executive
+                </button>
+                <button
+                  type="button"
+                  className={`tab ${tab === "technical" ? "active" : ""}`}
+                  onClick={() => setTab("technical")}
+                >
+                  Technical
+                </button>
+              </div>
+            </div>
+            <div className="panel-body">
+              {report ? (
+                <p className="summary-text">
+                  {tab === "executive"
+                    ? report.executive_summary.body
+                    : report.technical_summary.body}
+                </p>
+              ) : (
+                <p className="summary-text">—</p>
+              )}
             </div>
           </div>
 

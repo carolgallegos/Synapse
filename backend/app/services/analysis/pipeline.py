@@ -83,8 +83,15 @@ class IncidentAnalyzer:
     async def analyze(self, question: str) -> AnalysisReport:
         await IngestPipeline().run("*")
 
-        related_events = await self._splunk.search("authentication deployment latency login complaint ticket")
-        evidence = [self._to_evidence(event) for event in related_events[:8]]
+        related_raw = await self._splunk.search("authentication deployment latency login ticket complaint")
+        evidence = sorted(
+            [
+                self._to_evidence(event)
+                for event in related_raw
+                if "payment" not in str(event.get("service", "")).lower()
+            ],
+            key=lambda e: e.timestamp,
+        )[:6]
 
         causal_chain = self._build_causal_chain(evidence)
         historical = self._match_history()
@@ -93,16 +100,7 @@ class IncidentAnalyzer:
             "Authentication latency increased by 320% following Deployment v4.2 to the Authentication Service."
         )
 
-        seed_nodes = [
-            _node_id("deployment", "Deployment V4.2"),
-            _node_id("service", "authentication service"),
-            _node_id("event", "login failure"),
-            _node_id("service", "customer portal"),
-        ]
-        nodes, edges = graph_store.get_subgraph(seed_nodes, depth=3)
-
-        if not nodes:
-            nodes, edges = self._fallback_graph()
+        nodes, edges = self._demo_graph()
 
         return AnalysisReport(
             query=question,
@@ -234,20 +232,20 @@ class IncidentAnalyzer:
             ticket_volume_delta="+240%",
         )
 
-    def _fallback_graph(self) -> tuple[list[GraphNode], list[GraphEdge]]:
+    def _demo_graph(self) -> tuple[list[GraphNode], list[GraphEdge]]:
         nodes = [
             GraphNode(id="deployment:deployment-v4-2", label="Deployment v4.2", kind="deployment"),
             GraphNode(id="service:authentication-service", label="Authentication Service", kind="service"),
-            GraphNode(id="event:latency-spike", label="Latency Spike", kind="event"),
+            GraphNode(id="event:latency-spike", label="Latency +320%", kind="event"),
             GraphNode(id="event:login-failure", label="Login Failures", kind="event"),
-            GraphNode(id="service:customer-portal", label="Customer Portal", kind="service"),
+            GraphNode(id="event:ticket", label="Support Tickets", kind="ticket"),
             GraphNode(id="event:complaint", label="Customer Complaints", kind="ticket"),
         ]
         edges = [
-            GraphEdge(source="deployment:deployment-v4-2", target="service:authentication-service", relation="deployed_to"),
+            GraphEdge(source="deployment:deployment-v4-2", target="service:authentication-service", relation="deployed to"),
             GraphEdge(source="service:authentication-service", target="event:latency-spike", relation="degraded"),
             GraphEdge(source="event:latency-spike", target="event:login-failure", relation="causes"),
-            GraphEdge(source="event:login-failure", target="service:customer-portal", relation="impacts"),
-            GraphEdge(source="service:customer-portal", target="event:complaint", relation="drives"),
+            GraphEdge(source="event:login-failure", target="event:ticket", relation="drives"),
+            GraphEdge(source="event:ticket", target="event:complaint", relation="leads to"),
         ]
         return nodes, edges

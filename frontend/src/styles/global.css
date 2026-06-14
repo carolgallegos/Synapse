@@ -145,6 +145,19 @@ input {
   color: var(--text-muted);
 }
 
+.panel-subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.panel-highlight {
+  border-color: rgba(101, 163, 13, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(101, 163, 13, 0.12);
+}
+
 .panel-body {
   padding: 1rem;
 }
@@ -206,16 +219,18 @@ input {
 }
 
 .graph-wrap {
-  min-height: 340px;
+  min-height: 300px;
   background: radial-gradient(circle at center, #151c27, #0f141c);
   border-radius: 8px;
   border: 1px solid var(--border);
   position: relative;
+  overflow-x: auto;
 }
 
 .graph-svg {
   width: 100%;
-  height: 340px;
+  min-width: 720px;
+  height: 300px;
 }
 
 .node-card {
@@ -237,11 +252,20 @@ input {
   letter-spacing: 0.06em;
 }
 
-.edge-line {
-  stroke: #4b5563;
-  stroke-width: 1.5;
-  fill: none;
+.edge-line-story {
+  stroke: #65a30d;
+  stroke-width: 2;
   marker-end: url(#arrow);
+}
+
+.edge-label-story {
+  fill: #84cc16;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.node-card-story {
+  fill: #1a2230;
 }
 
 .edge-label {
