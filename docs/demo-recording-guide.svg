@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.15"/>
+    </filter>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowPink" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#e20074"/>
+    </marker>
+    <style>
+      .ui { font-family: Segoe UI, system-ui, sans-serif; }
+      .title { font-size: 22px; font-weight: 700; fill: #111827; }
+      .panel-title { font-size: 15px; font-weight: 600; fill: #111827; }
+      .body { font-size: 12px; fill: #374151; }
+      .muted { font-size: 11px; fill: #6b7280; }
+      .header-text { fill: #f3f4f6; font-size: 18px; font-weight: 600; }
+      .header-sub { fill: #9ca3af; font-size: 12px; }
+      .step-title { font-size: 15px; font-weight: 700; fill: #1e3a8a; }
+      .step-body { font-size: 13px; fill: #1f2937; }
+      .step-time { font-size: 12px; font-weight: 700; fill: #e20074; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="#f3f4f6"/>
+
+  <rect x="0" y="0" width="1920" height="56" fill="#1e3a8a"/>
+  <text x="24" y="36" class="ui" font-size="20" font-weight="700" fill="#fff">Synapse - Guia de grabacion del demo (~2 min)</text>
+  <text x="1680" y="36" class="ui" font-size="14" fill="#bfdbfe" text-anchor="end">Abre localhost en pantalla completa (F11) | Windows+G para grabar</text>
+
+  <g transform="translate(24, 72)">
+    <rect x="0" y="0" width="1280" height="984" rx="8" fill="#f9fafb" stroke="#d1d5db" stroke-width="1"/>
+    <rect x="0" y="0" width="1280" height="56" fill="#111827"/>
+    <rect x="0" y="53" width="1280" height="3" fill="#e20074"/>
+    <rect x="16" y="12" width="32" height="32" rx="6" fill="#e20074"/>
+    <text x="56" y="28" class="ui header-text">Synapse</text>
+    <text x="56" y="44" class="ui header-sub">Operational intelligence from Splunk</text>
+    <rect x="1040" y="14" width="88" height="28" rx="6" stroke="#6b7280" fill="none"/>
+    <text x="1084" y="32" class="ui" font-size="11" fill="#d1d5db" text-anchor="middle">Export report</text>
+    <rect x="1140" y="14" width="120" height="28" rx="14" fill="#1f2937" stroke="#374151"/>
+    <circle cx="1156" cy="28" r="4" fill="#059669"/>
+    <text x="1170" y="32" class="ui" font-size="11" fill="#d1d5db">Splunk mock</text>
+
+    <text x="20" y="88" class="ui muted">Incident query</text>
+    <rect x="20" y="96" width="820" height="36" rx="6" fill="#fff" stroke="#d1d5db"/>
+    <text x="32" y="118" class="ui body">Why are customer complaints increasing?</text>
+    <rect x="850" y="96" width="80" height="36" rx="6" fill="#e20074"/>
+    <text x="890" y="118" class="ui" font-size="12" fill="#fff" text-anchor="middle" font-weight="600">Analyze</text>
+
+    <rect x="20" y="148" width="600" height="72" rx="8" fill="#fce7f3" stroke="#e20074" stroke-width="1"/>
+    <text x="32" y="172" class="ui panel-title" fill="#9d174d">Root cause</text>
+    <text x="32" y="194" class="ui body" font-size="11">Deployment v4.2 introduced auth latency regression affecting login</text>
+
+    <rect x="20" y="236" width="600" height="100" rx="8" fill="#fff" stroke="#e5e7eb"/>
+    <text x="32" y="260" class="ui panel-title">Timeline</text>
+    <line x1="48" y1="290" x2="580" y2="290" stroke="#e5e7eb" stroke-width="2"/>
+    <circle cx="80" cy="290" r="6" fill="#e20074"/>
+    <circle cx="200" cy="290" r="6" fill="#d1d5db"/>
+    <circle cx="320" cy="290" r="6" fill="#d1d5db"/>
+    <circle cx="440" cy="290" r="6" fill="#d1d5db"/>
+    <text x="80" y="318" class="ui muted" text-anchor="middle">Deploy</text>
+    <text x="200" y="318" class="ui muted" text-anchor="middle">Latency</text>
+    <text x="320" y="318" class="ui muted" text-anchor="middle">Login fail</text>
+    <text x="440" y="318" class="ui muted" text-anchor="middle">Tickets</text>
+
+    <rect x="20" y="352" width="600" height="280" rx="8" fill="#fff" stroke="#e5e7eb"/>
+    <text x="32" y="376" class="ui panel-title">Service map</text>
+    <rect x="60" y="420" width="88" height="52" rx="6" fill="#fff" stroke="#f59e0b" stroke-width="2"/>
+    <text x="104" y="442" class="ui muted" text-anchor="middle">deployment</text>
+    <text x="104" y="458" class="ui body" font-size="10" text-anchor="middle">Deploy v4.2</text>
+    <line x1="148" y1="446" x2="188" y2="446" stroke="#9ca3af" stroke-width="2" marker-end="url(#arrowPink)"/>
+    <rect x="188" y="420" width="88" height="52" rx="6" fill="#fff" stroke="#38bdf8" stroke-width="2"/>
+    <text x="232" y="458" class="ui body" font-size="10" text-anchor="middle">Auth svc</text>
+    <line x1="276" y1="446" x2="316" y2="446" stroke="#9ca3af" stroke-width="2"/>
+    <rect x="316" y="420" width="88" height="52" rx="6" fill="#fff" stroke="#a78bfa" stroke-width="2"/>
+    <text x="360" y="458" class="ui body" font-size="10" text-anchor="middle">Latency</text>
+    <line x1="404" y1="446" x2="444" y2="446" stroke="#9ca3af" stroke-width="2"/>
+    <rect x="444" y="420" width="88" height="52" rx="6" fill="#fff" stroke="#f87171" stroke-width="2"/>
+    <text x="488" y="458" class="ui body" font-size="10" text-anchor="middle">Complaints</text>
+    <text x="32" y="400" class="ui muted">Drag nodes | click to inspect | scroll to zoom</text>
+
+    <rect x="20" y="648" width="600" height="100" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+    <text x="32" y="672" class="ui panel-title" fill="#b45309">Early warning - Payment API</text>
+    <text x="32" y="694" class="ui body" font-size="11">Independent signal - error rate trending up before next incident</text>
+
+    <rect x="640" y="148" width="620" height="200" rx="8" fill="#fff" stroke="#e20074" stroke-width="1"/>
+    <text x="652" y="172" class="ui panel-title">Causal chain</text>
+    <text x="652" y="198" class="ui body" font-size="11">Deployment v4.2 -&gt; deployed to -&gt; Authentication Service</text>
+    <text x="652" y="218" class="ui body" font-size="11">Authentication Service -&gt; caused -&gt; Latency spike</text>
+    <text x="652" y="238" class="ui body" font-size="11">Support tickets -&gt; leads to -&gt; Customer complaints</text>
+
+    <rect x="640" y="364" width="620" height="100" rx="8" fill="#fff" stroke="#e5e7eb"/>
+    <text x="652" y="388" class="ui panel-title">Impact</text>
+    <text x="652" y="418" class="ui title" font-size="28">18,000</text>
+    <text x="652" y="438" class="ui muted">Affected users</text>
+    <text x="820" y="418" class="ui title" font-size="28">+240%</text>
+    <text x="820" y="438" class="ui muted">Ticket volume</text>
+
+    <rect x="640" y="480" width="620" height="120" rx="8" fill="#fff" stroke="#e5e7eb"/>
+    <text x="652" y="504" class="ui panel-title">Prior incidents</text>
+    <text x="652" y="528" class="ui body" font-size="11">INC-2841 | 2024-11-02 | Auth degradation after deploy</text>
+    <text x="652" y="548" class="ui body" font-size="11">INC-2910 | 2025-01-14 | Login failures post-release</text>
+
+    <rect x="640" y="616" width="620" height="132" rx="8" fill="#fff" stroke="#e5e7eb"/>
+    <text x="652" y="640" class="ui panel-title">Splunk evidence</text>
+    <rect x="652" y="652" width="580" height="36" rx="4" fill="#f9fafb" stroke="#e5e7eb"/>
+    <text x="664" y="674" class="ui body" font-size="11">Customer complaints increasing due to authentication timeouts</text>
+    <rect x="652" y="694" width="580" height="36" rx="4" fill="#fce7f3" stroke="#e20074"/>
+    <text x="664" y="716" class="ui body" font-size="11">Login failure rate exceeded threshold on auth-service</text>
+  </g>
+
+  <rect x="52" y="228" width="616" height="80" rx="10" fill="none" stroke="#f97316" stroke-width="4" stroke-dasharray="10 6"/>
+  <circle cx="72" cy="218" r="18" fill="#f97316"/>
+  <text x="72" y="224" class="ui" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+
+  <rect x="52" y="316" width="616" height="108" rx="10" fill="rgba(37,99,235,0.08)" stroke="#2563eb" stroke-width="3" stroke-dasharray="12 8"/>
+  <circle cx="72" cy="306" r="18" fill="#2563eb"/>
+  <text x="72" y="312" class="ui" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+
+  <rect x="52" y="432" width="616" height="296" rx="10" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="12 8" opacity="0.5"/>
+  <circle cx="640" cy="450" r="18" fill="#2563eb" opacity="0.5"/>
+  <text x="640" y="456" class="ui" font-size="16" font-weight="700" fill="#fff" text-anchor="middle" opacity="0.5">3</text>
+
+  <rect x="672" y="228" width="636" height="208" rx="10" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="12 8" opacity="0.4"/>
+  <circle cx="1288" cy="218" r="18" fill="#2563eb" opacity="0.4"/>
+  <text x="1288" y="224" class="ui" font-size="16" font-weight="700" fill="#fff" text-anchor="middle" opacity="0.4">4</text>
+
+  <circle cx="1288" cy="434" r="16" fill="#2563eb" opacity="0.35"/>
+  <text x="1288" y="440" class="ui" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" opacity="0.35">5</text>
+
+  <circle cx="1288" cy="550" r="16" fill="#2563eb" opacity="0.35"/>
+  <text x="1288" y="556" class="ui" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" opacity="0.35">6</text>
+
+  <rect x="672" y="696" width="636" height="148" rx="10" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="12 8" opacity="0.4"/>
+  <circle cx="1288" cy="686" r="18" fill="#2563eb" opacity="0.4"/>
+  <text x="1288" y="692" class="ui" font-size="16" font-weight="700" fill="#fff" text-anchor="middle" opacity="0.4">7</text>
+
+  <rect x="52" y="728" width="616" height="108" rx="10" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="12 8" opacity="0.4"/>
+  <circle cx="72" cy="718" r="18" fill="#2563eb" opacity="0.4"/>
+  <text x="72" y="724" class="ui" font-size="16" font-weight="700" fill="#fff" text-anchor="middle" opacity="0.4">8</text>
+
+  <rect x="1064" y="90" width="108" height="40" rx="8" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="8 6" opacity="0.5"/>
+  <circle cx="1188" cy="86" r="16" fill="#2563eb" opacity="0.5"/>
+  <text x="1188" y="92" class="ui" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" opacity="0.5">9</text>
+
+  <path d="M 360 310 L 360 318" stroke="#2563eb" stroke-width="3" marker-end="url(#arrowBlue)"/>
+
+  <rect x="1328" y="72" width="568" height="984" rx="12" fill="#fff" stroke="#d1d5db" filter="url(#shadow)"/>
+  <rect x="1328" y="72" width="568" height="48" rx="12" fill="#eff6ff"/>
+  <rect x="1328" y="108" width="568" height="12" fill="#eff6ff"/>
+  <text x="1352" y="104" class="ui step-title">Instrucciones paso a paso</text>
+  <text x="1352" y="128" class="ui muted">Naranja = donde estas ahora | Azul = siguiente parada</text>
+
+  <g transform="translate(1352, 148)">
+    <rect x="0" y="0" width="520" height="88" rx="8" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+    <circle cx="24" cy="24" r="14" fill="#f97316"/>
+    <text x="24" y="29" class="ui" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+    <text x="48" y="28" class="ui step-title" fill="#c2410c">Root cause</text>
+    <text x="48" y="50" class="ui step-body">Apunta esta zona con el cursor. No hagas clic.</text>
+    <text x="48" y="72" class="ui step-time">DETENTE 3 segundos aqui</text>
+
+    <rect x="0" y="100" width="520" height="88" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+    <circle cx="24" cy="124" r="14" fill="#2563eb"/>
+    <text x="24" y="129" class="ui" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+    <text x="48" y="128" class="ui step-title">Timeline</text>
+    <text x="48" y="150" class="ui step-body">Baja suavemente al area marcada en AZUL.</text>
+    <text x="48" y="172" class="ui step-time">DETENTE 3 segundos</text>
+
+    <rect x="0" y="200" width="520" height="100" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+    <circle cx="24" cy="224" r="14" fill="#6b7280"/>
+    <text x="24" y="229" class="ui" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+    <text x="48" y="228" class="ui step-title" fill="#374151">Service map</text>
+    <text x="48" y="250" class="ui step-body">Arrastra UN nodo. Luego clic en otro (ej. Complaints).</text>
+    <text x="48" y="272" class="ui step-time">5 segundos en total</text>
+
+    <rect x="0" y="312" width="520" height="88" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+    <circle cx="24" cy="336" r="14" fill="#6b7280"/>
+    <text x="48" y="340" class="ui step-title" fill="#374151">Causal chain (panel derecho)</text>
+    <text x="48" y="362" class="ui step-body">Mueve el cursor al panel derecho, zona azul.</text>
+    <text x="48" y="384" class="ui step-time">DETENTE 3 segundos</text>
+
+    <rect x="0" y="412" width="520" height="72" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+    <circle cx="24" cy="436" r="14" fill="#6b7280"/>
+    <text x="48" y="440" class="ui step-title" fill="#374151">Impact</text>
+    <text x="48" y="462" class="ui step-body">Destaca 18,000 usuarios y +240% tickets.</text>
+    <text x="48" y="478" class="ui step-time">DETENTE 3 segundos</text>
+
+    <rect x="0" y="496" width="520" height="72" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+    <circle cx="24" cy="520" r="14" fill="#6b7280"/>
+    <text x="48" y="524" class="ui step-title" fill="#374151">Prior incidents</text>
+    <text x="48" y="546" class="ui step-body">Menciona INC-2841 e INC-2910.</text>
+    <text x="48" y="562" class="ui step-time">DETENTE 3 segundos</text>
+
+    <rect x="0" y="580" width="520" height="88" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+    <circle cx="24" cy="604" r="14" fill="#6b7280"/>
+    <text x="48" y="608" class="ui step-title" fill="#374151">Splunk evidence</text>
+    <text x="48" y="630" class="ui step-body">Clic en un evento - se abre enlace Splunk (o mock).</text>
+    <text x="48" y="652" class="ui step-time">DETENTE 4 segundos</text>
+
+    <rect x="0" y="680" width="520" height="88" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+    <circle cx="24" cy="704" r="14" fill="#6b7280"/>
+    <text x="48" y="708" class="ui step-title" fill="#374151">Early warning</text>
+    <text x="48" y="730" class="ui step-body">Scroll abajo. Payment API = senal independiente.</text>
+    <text x="48" y="752" class="ui step-time">DETENTE 3 segundos</text>
+
+    <rect x="0" y="780" width="520" height="72" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+    <circle cx="24" cy="804" r="14" fill="#6b7280"/>
+    <text x="48" y="808" class="ui step-title" fill="#374151">Export report</text>
+    <text x="48" y="830" class="ui step-body">Arriba a la derecha - clic en Export report.</text>
+    <text x="48" y="846" class="ui step-time">2 segundos - FIN</text>
+  </g>
+
+  <rect x="1352" y="1000" width="520" height="40" rx="6" fill="#f3f4f6"/>
+  <rect x="1368" y="1014" width="24" height="12" rx="2" fill="none" stroke="#f97316" stroke-width="3"/>
+  <text x="1400" y="1024" class="ui muted" font-size="11">Paso actual</text>
+  <rect x="1500" y="1014" width="24" height="12" rx="2" fill="rgba(37,99,235,0.2)" stroke="#2563eb" stroke-width="2" stroke-dasharray="4 3"/>
+  <text x="1532" y="1024" class="ui muted" font-size="11">Siguiente parada</text>
+  <text x="1680" y="1024" class="ui" font-size="11" fill="#e20074" font-weight="600">Total acciones: ~28 s + narracion</text>
+
+  <rect x="24" y="1028" width="1280" height="36" rx="6" fill="#111827"/>
+  <text x="40" y="1052" class="ui" font-size="13" fill="#f3f4f6">Narracion: Synapse conecta despliegues, servicios y quejas en Splunk, encuentra causa raiz, impacto, historial y evidencia clickeable.</text>
+</svg>

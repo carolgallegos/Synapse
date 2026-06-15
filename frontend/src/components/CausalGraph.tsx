@@ -19,6 +19,8 @@ const STORY_ORDER = [
   "event:complaint",
 ];
 
+const DEFAULT_VIEWBOX = "0 0 800 300";
+
 interface Props {
   nodes: GraphNode[];
   edges: GraphEdge[];
@@ -54,11 +56,40 @@ function buildLayout(displayNodes: GraphNode[]) {
   return positions;
 }
 
+function computeViewBox(positions: Record<string, { x: number; y: number }>) {
+  const values = Object.values(positions);
+  if (!values.length) return DEFAULT_VIEWBOX;
+
+  const xs = values.map((p) => p.x);
+  const ys = values.map((p) => p.y);
+  const minX = Math.min(...xs) - 80;
+  const maxX = Math.max(...xs) + 120;
+  const minY = Math.min(...ys) - 60;
+  const maxY = Math.max(...ys) + 60;
+  const width = Math.max(maxX - minX, 100);
+  const height = Math.max(maxY - minY, 100);
+  return `${minX} ${minY} ${width} ${height}`;
+}
+
 export function CausalGraph({ nodes, edges, selectedNodeId, onNodeSelect }: Props) {
-  const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({});
+  const displayNodes = useMemo(() => {
+    const ordered = STORY_ORDER.map((id) => nodes.find((n) => n.id === id)).filter(Boolean) as GraphNode[];
+    return ordered.length >= 4 ? ordered : nodes;
+  }, [nodes]);
+
+  const nodeKey = displayNodes.map((n) => n.id).join("|");
+
+  const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>(() =>
+    buildLayout(displayNodes),
+  );
   const [zoom, setZoom] = useState(1);
   const [activeNode, setActiveNode] = useState<string | null>(null);
-  const drag = useRef<{
+
+  const svgRef = useRef<SVGSVGElement>(null);
+  const onNodeSelectRef = useRef(onNodeSelect);
+  onNodeSelectRef.current = onNodeSelect;
+
+  const dragRef = useRef<{
     nodeId: string;
     startX: number;
     startY: number;
@@ -66,14 +97,10 @@ export function CausalGraph({ nodes, edges, selectedNodeId, onNodeSelect }: Prop
     originY: number;
     moved: boolean;
   } | null>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
 
-  const story = useMemo(() => {
-    const ordered = STORY_ORDER.map((id) => nodes.find((n) => n.id === id)).filter(Boolean) as GraphNode[];
-    const displayNodes = ordered.length >= 4 ? ordered : nodes;
-
+  const storyEdges = useMemo(() => {
     const edgeMap = new Map(edges.map((e) => [`${e.source}|${e.target}`, e.relation]));
-    const storyEdges = displayNodes.slice(0, -1).map((node, idx) => {
+    return displayNodes.slice(0, -1).map((node, idx) => {
       const next = displayNodes[idx + 1];
       const relation =
         edgeMap.get(`${node.id}|${next.id}`) ??
@@ -81,39 +108,82 @@ export function CausalGraph({ nodes, edges, selectedNodeId, onNodeSelect }: Prop
         "leads to";
       return { source: node.id, target: next.id, relation };
     });
-
-    return { displayNodes, storyEdges };
-  }, [nodes, edges]);
+  }, [displayNodes, edges]);
 
   useEffect(() => {
-    setPositions(buildLayout(story.displayNodes));
+    setPositions(buildLayout(displayNodes));
     setZoom(1);
-  }, [story.displayNodes]);
+  }, [nodeKey]);
+
+  useEffect(() => {
+    function clientToSvg(clientX: number, clientY: number) {
+      const svg = svgRef.current;
+      if (!svg) return { x: clientX, y: clientY };
+      const pt = svg.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      const ctm = svg.getScreenCTM();
+      if (!ctm) return { x: clientX, y: clientY };
+      const local = pt.matrixTransform(ctm.inverse());
+      const z = zoom;
+      return { x: local.x / z, y: local.y / z };
+    }
+
+    function onPointerMove(event: PointerEvent) {
+      const drag = dragRef.current;
+      if (!drag) return;
+      const svgPoint = clientToSvg(event.clientX, event.clientY);
+      const dx = svgPoint.x - drag.startX;
+      const dy = svgPoint.y - drag.startY;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) drag.moved = true;
+      setPositions((prev) => ({
+        ...prev,
+        [drag.nodeId]: {
+          x: drag.originX + dx,
+          y: drag.originY + dy,
+        },
+      }));
+    }
+
+    function onPointerUp() {
+      const drag = dragRef.current;
+      if (!drag) return;
+      dragRef.current = null;
+      setActiveNode(null);
+      if (!drag.moved) onNodeSelectRef.current(drag.nodeId);
+    }
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
+    };
+  }, [zoom]);
 
   function resetLayout() {
-    setPositions(buildLayout(story.displayNodes));
+    setPositions(buildLayout(displayNodes));
     setActiveNode(null);
     setZoom(1);
-  }
-
-  function clientToSvg(clientX: number, clientY: number) {
-    const svg = svgRef.current;
-    if (!svg) return { x: clientX, y: clientY };
-    const pt = svg.createSVGPoint();
-    pt.x = clientX;
-    pt.y = clientY;
-    const ctm = svg.getScreenCTM();
-    if (!ctm) return { x: clientX, y: clientY };
-    const local = pt.matrixTransform(ctm.inverse());
-    return { x: local.x / zoom, y: local.y / zoom };
+    dragRef.current = null;
   }
 
   function onNodePointerDown(nodeId: string, event: React.PointerEvent) {
+    event.preventDefault();
     event.stopPropagation();
     const pos = positions[nodeId];
-    if (!pos) return;
-    const svgPoint = clientToSvg(event.clientX, event.clientY);
-    drag.current = {
+    if (!pos || !svgRef.current) return;
+
+    const pt = svgRef.current.createSVGPoint();
+    pt.x = event.clientX;
+    pt.y = event.clientY;
+    const ctm = svgRef.current.getScreenCTM();
+    const local = ctm ? pt.matrixTransform(ctm.inverse()) : { x: event.clientX, y: event.clientY };
+    const svgPoint = { x: local.x / zoom, y: local.y / zoom };
+
+    dragRef.current = {
       nodeId,
       startX: svgPoint.x,
       startY: svgPoint.y,
@@ -122,30 +192,6 @@ export function CausalGraph({ nodes, edges, selectedNodeId, onNodeSelect }: Prop
       moved: false,
     };
     setActiveNode(nodeId);
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }
-
-  function onSvgPointerMove(event: React.PointerEvent) {
-    if (!drag.current) return;
-    const svgPoint = clientToSvg(event.clientX, event.clientY);
-    const dx = svgPoint.x - drag.current.startX;
-    const dy = svgPoint.y - drag.current.startY;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) drag.current.moved = true;
-    setPositions((prev) => ({
-      ...prev,
-      [drag.current!.nodeId]: {
-        x: drag.current!.originX + dx,
-        y: drag.current!.originY + dy,
-      },
-    }));
-  }
-
-  function onSvgPointerUp(event: React.PointerEvent) {
-    if (drag.current) {
-      if (!drag.current.moved) onNodeSelect(drag.current.nodeId);
-      event.currentTarget.releasePointerCapture(event.pointerId);
-      drag.current = null;
-    }
   }
 
   function onWheel(event: React.WheelEvent) {
@@ -153,20 +199,14 @@ export function CausalGraph({ nodes, edges, selectedNodeId, onNodeSelect }: Prop
     setZoom((z) => Math.min(1.8, Math.max(0.65, z - event.deltaY * 0.0012)));
   }
 
-  if (!story.displayNodes.length) {
+  if (!displayNodes.length) {
     return <div className="empty-state">Run an analysis to build the operational graph.</div>;
   }
 
-  const xs = Object.values(positions).map((p) => p.x);
-  const ys = Object.values(positions).map((p) => p.y);
-  const minX = Math.min(...xs, 0) - 80;
-  const maxX = Math.max(...xs, 720) + 120;
-  const minY = Math.min(...ys, 0) - 60;
-  const maxY = Math.max(...ys, 300) + 60;
-  const width = maxX - minX;
-  const height = maxY - minY;
-  const cx = (minX + maxX) / 2;
-  const cy = (minY + maxY) / 2;
+  const viewBox = computeViewBox(positions);
+  const parts = viewBox.split(" ").map(Number);
+  const cx = parts[0] + parts[2] / 2;
+  const cy = parts[1] + parts[3] / 2;
 
   return (
     <div className="graph-wrap">
@@ -182,11 +222,8 @@ export function CausalGraph({ nodes, edges, selectedNodeId, onNodeSelect }: Prop
       <svg
         ref={svgRef}
         className="graph-svg"
-        viewBox={`${minX} ${minY} ${width} ${height}`}
+        viewBox={viewBox}
         preserveAspectRatio="xMidYMid meet"
-        onPointerMove={onSvgPointerMove}
-        onPointerUp={onSvgPointerUp}
-        onPointerLeave={onSvgPointerUp}
         onWheel={onWheel}
       >
         <defs>
@@ -195,7 +232,7 @@ export function CausalGraph({ nodes, edges, selectedNodeId, onNodeSelect }: Prop
           </marker>
         </defs>
         <g transform={`translate(${cx} ${cy}) scale(${zoom}) translate(${-cx} ${-cy})`}>
-          {story.storyEdges.map((edge) => {
+          {storyEdges.map((edge) => {
             const from = positions[edge.source];
             const to = positions[edge.target];
             if (!from || !to) return null;
@@ -221,7 +258,7 @@ export function CausalGraph({ nodes, edges, selectedNodeId, onNodeSelect }: Prop
               </g>
             );
           })}
-          {story.displayNodes.map((node) => {
+          {displayNodes.map((node) => {
             const pos = positions[node.id];
             if (!pos) return null;
             const color = KIND_COLORS[node.kind] ?? "#94a3b8";
@@ -235,7 +272,6 @@ export function CausalGraph({ nodes, edges, selectedNodeId, onNodeSelect }: Prop
                 transform={`translate(${pos.x - 50}, ${pos.y - 30})`}
                 onPointerDown={(e) => onNodePointerDown(node.id, e)}
               >
-                <title>{node.label} — click to view Splunk evidence</title>
                 <rect className="node-card node-card-story" width="100" height="60" rx="8" stroke={color} />
                 <text className="node-kind" x="50" y="16" textAnchor="middle">
                   {node.kind}
