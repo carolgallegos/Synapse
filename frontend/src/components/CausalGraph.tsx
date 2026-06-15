@@ -191,7 +191,7 @@ export function CausalGraph({ nodes, edges, selectedNodeId, onNodeSelect }: Prop
       >
         <defs>
           <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L6,3 L0,6 Z" fill="#65a30d" />
+            <path d="M0,0 L6,3 L0,6 Z" fill="#94a3b8" />
           </marker>
         </defs>
         <g transform={`translate(${cx} ${cy}) scale(${zoom}) translate(${-cx} ${-cy})`}>
