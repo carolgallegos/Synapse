@@ -171,7 +171,7 @@ export function CausalGraph({ nodes, edges, selectedNodeId, onNodeSelect }: Prop
   return (
     <div className="graph-wrap">
       <div className="graph-toolbar">
-        <span className="graph-hint">Drag nodes · Click to link Splunk evidence · Scroll to zoom</span>
+        <span className="graph-hint">Drag nodes · click to inspect · scroll to zoom</span>
         <div className="graph-toolbar-actions">
           <span className="zoom-label">{Math.round(zoom * 100)}%</span>
           <button type="button" className="graph-reset" onClick={resetLayout}>

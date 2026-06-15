@@ -3,12 +3,11 @@ import { shortEventLabel } from "../utils/nodeEvidence";
 
 interface Props {
   events: SplunkEvidence[];
-  selectedNodeId: string | null;
   selectedEventId: string | null;
   onSelectEvent: (eventId: string) => void;
 }
 
-export function IncidentTimeline({ events, selectedNodeId, selectedEventId, onSelectEvent }: Props) {
+export function IncidentTimeline({ events, selectedEventId, onSelectEvent }: Props) {
   const sorted = [...events].sort(
     (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
   );
@@ -47,9 +46,6 @@ export function IncidentTimeline({ events, selectedNodeId, selectedEventId, onSe
           </div>
         ))}
       </div>
-      {selectedNodeId && (
-        <p className="timeline-filter-note">Timeline filtered by selected graph node</p>
-      )}
     </div>
   );
 }

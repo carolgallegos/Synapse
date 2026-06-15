@@ -62,7 +62,7 @@ export function EvidencePanel({ events, selectedNodeId, selectedEventId, onSelec
                 openInSplunk(event.splunk_query);
               }}
             >
-              View in Splunk
+              Open in Splunk
             </button>
           </div>
         );
