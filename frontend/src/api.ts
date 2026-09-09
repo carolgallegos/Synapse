@@ -55,6 +55,7 @@ export interface AnalysisReport {
   executive_summary: { title: string; body: string };
   graph_nodes: GraphNode[];
   graph_edges: GraphEdge[];
+  agent_trace?: AgentTrace | null;
 }
 
 export interface RiskPrediction {
@@ -63,6 +64,19 @@ export interface RiskPrediction {
   recommendation: string;
   reasons: string[];
   evidence: SplunkEvidence[];
+}
+
+export interface AgentStep {
+  tool: string;
+  input: Record<string, unknown>;
+  output_summary: string;
+  duration_ms: number;
+}
+
+export interface AgentTrace {
+  mode: string;
+  steps: AgentStep[];
+  generated_spl?: string | null;
 }
 
 const API = "/api/v1";
@@ -89,7 +103,7 @@ export async function fetchSplunkUrl(query: string): Promise<string> {
   return data.url;
 }
 
-export async function fetchHealth(): Promise<{ splunk_mode: string; graph_nodes: number }> {
+export async function fetchHealth(): Promise<{ splunk_mode: string; mcp_mode: string; graph_nodes: number }> {
   const res = await fetch(`${API}/health`);
   return res.json();
 }

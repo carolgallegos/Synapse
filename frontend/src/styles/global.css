@@ -330,6 +330,64 @@ input {
   border-left: 3px solid var(--brand);
 }
 
+.panel-mcp {
+  border-left: 3px solid #2563eb;
+  background: linear-gradient(135deg, var(--surface) 0%, rgba(37, 99, 235, 0.04) 100%);
+}
+
+.mcp-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+}
+
+.mcp-spl {
+  font-size: 0.8rem;
+  margin: 0 0 0.75rem;
+}
+
+.mcp-spl code {
+  display: block;
+  margin-top: 0.35rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: var(--surface-muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  word-break: break-word;
+}
+
+.mcp-steps {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.mcp-steps li {
+  margin-bottom: 0.65rem;
+}
+
+.mcp-step-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.mcp-step-head span {
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+}
+
+.mcp-footnote {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+}
+
 .side-stack .panel {
   margin-bottom: 1rem;
 }

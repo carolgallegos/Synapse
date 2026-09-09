@@ -13,6 +13,7 @@ from app.models.schemas import (
     ReportSection,
     SplunkEvidence,
 )
+from app.services.agents.investigator import AgenticInvestigator
 from app.services.extraction.parser import OperationalParser, _node_id
 from app.services.graph.store import graph_store
 from app.services.splunk.client import get_splunk_provider, parse_timestamp
@@ -81,9 +82,13 @@ class IncidentAnalyzer:
         self._splunk = get_splunk_provider()
 
     async def analyze(self, question: str) -> AnalysisReport:
+        agent_trace, mcp_events = await AgenticInvestigator().investigate(question)
         await IngestPipeline().run("*")
 
-        related_raw = await self._splunk.search("authentication deployment latency login ticket complaint")
+        if mcp_events:
+            related_raw = [e for e in mcp_events if "payment" not in str(e.get("service", "")).lower()]
+        else:
+            related_raw = await self._splunk.search("authentication deployment latency login ticket complaint")
         evidence = sorted(
             [
                 self._to_evidence(event)
@@ -127,6 +132,7 @@ class IncidentAnalyzer:
             ),
             graph_nodes=nodes,
             graph_edges=edges,
+            agent_trace=agent_trace,
         )
 
     async def predict_risk(self) -> dict:

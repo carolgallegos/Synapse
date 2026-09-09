@@ -6,6 +6,7 @@ import {
   type AnalysisReport,
   type RiskPrediction,
 } from "./api";
+import { AgentTracePanel } from "./components/AgentTracePanel";
 import { CausalGraph } from "./components/CausalGraph";
 import { EvidencePanel } from "./components/EvidencePanel";
 import { IncidentTimeline } from "./components/IncidentTimeline";
@@ -30,7 +31,7 @@ export default function App() {
   const [risk, setRisk] = useState<RiskPrediction | null>(null);
   const [tab, setTab] = useState<ReportTab>("executive");
   const [loading, setLoading] = useState(false);
-  const [health, setHealth] = useState<{ splunk_mode: string } | null>(null);
+  const [health, setHealth] = useState<{ splunk_mode: string; mcp_mode: string } | null>(null);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>(() => getInitialTheme());
@@ -130,7 +131,7 @@ export default function App() {
           )}
           <div className="status-pill">
             <span className="status-dot" />
-            Splunk {health?.splunk_mode ?? "—"}
+            Splunk {health?.splunk_mode ?? "—"} · MCP {health?.mcp_mode ?? "—"}
           </div>
         </div>
       </header>
@@ -226,6 +227,8 @@ export default function App() {
         <aside className="side-stack">
           {report && !loading && (
             <>
+              {report.agent_trace && <AgentTracePanel trace={report.agent_trace} />}
+
               <div className="panel panel-accent">
                 <div className="panel-header">
                   <h2>Causal chain</h2>

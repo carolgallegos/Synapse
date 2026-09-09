@@ -5,6 +5,7 @@ from app.models.schemas import AnalysisReport, HealthResponse, IngestResult
 from app.services.analysis.pipeline import IncidentAnalyzer, IngestPipeline
 from app.services.graph.store import graph_store
 from app.services.splunk.client import get_splunk_provider
+from app.services.splunk.mcp_client import get_mcp_client
 from app.config import settings
 
 router = APIRouter()
@@ -17,9 +18,11 @@ class QueryRequest(BaseModel):
 @router.get("/health", response_model=HealthResponse)
 async def health() -> HealthResponse:
     mode = "mock" if settings.use_mock_splunk or not settings.splunk_host else "live"
+    mcp_mode = get_mcp_client().mode
     return HealthResponse(
         status="ok",
         splunk_mode=mode,
+        mcp_mode=mcp_mode,
         graph_nodes=graph_store.node_count,
         graph_edges=graph_store.edge_count,
     )
@@ -63,3 +66,15 @@ async def get_graph() -> dict:
 async def splunk_search_url(q: str) -> dict:
     provider = get_splunk_provider()
     return {"url": provider.build_search_url(q)}
+
+
+@router.get("/splunk/test")
+async def splunk_test() -> dict:
+    provider = get_splunk_provider()
+    return await provider.test_connection()
+
+
+@router.get("/mcp/test")
+async def mcp_test() -> dict:
+    client = get_mcp_client()
+    return await client.test_connection()

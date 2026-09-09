@@ -65,6 +65,19 @@ class ReportSection(BaseModel):
     body: str
 
 
+class AgentStep(BaseModel):
+    tool: str
+    input: dict[str, Any] = Field(default_factory=dict)
+    output_summary: str
+    duration_ms: int = 0
+
+
+class AgentTrace(BaseModel):
+    mode: str
+    steps: list[AgentStep] = Field(default_factory=list)
+    generated_spl: str | None = None
+
+
 class AnalysisReport(BaseModel):
     query: str
     root_cause: str
@@ -76,6 +89,7 @@ class AnalysisReport(BaseModel):
     executive_summary: ReportSection
     graph_nodes: list[GraphNode]
     graph_edges: list[GraphEdge]
+    agent_trace: AgentTrace | None = None
 
 
 class IngestResult(BaseModel):
@@ -87,5 +101,6 @@ class IngestResult(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     splunk_mode: str
+    mcp_mode: str
     graph_nodes: int
     graph_edges: int

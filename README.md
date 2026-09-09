@@ -37,6 +37,8 @@ You should see root cause, causal graph, historical matches (INC-2841, INC-2910)
 
 Full walkthrough with judge checklist: **[docs/TRY_IT_OUT.md](docs/TRY_IT_OUT.md)**
 
+**Record demo video:** **[docs/VIDEO_SCRIPT.md](docs/VIDEO_SCRIPT.md)** · **Devpost copy:** **[docs/DEVPOST.md](docs/DEVPOST.md)** · **Live Splunk:** **[docs/SPLUNK_LIVE.md](docs/SPLUNK_LIVE.md)**
+
 ## What it does
 
 1. **Ingest** — Pull operational events from Splunk (logs, metrics, deployments, tickets).
@@ -125,6 +127,7 @@ Synapse Dashboard
 | `/api/v1/predict/risk` | GET | Predictive risk signals |
 | `/api/v1/graph` | GET | Current knowledge graph |
 | `/api/v1/splunk/url` | GET | Generate Splunk search URL |
+| `/api/v1/splunk/test` | GET | Test Splunk connection (mock or live) |
 
 ## Category
 
