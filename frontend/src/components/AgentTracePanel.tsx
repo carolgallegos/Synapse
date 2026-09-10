@@ -18,10 +18,12 @@ export function AgentTracePanel({ trace }: Props) {
           </p>
         )}
         <ol className="mcp-steps">
-          {trace.steps.map((step) => (
-            <li key={`${step.tool}-${step.duration_ms}`}>
+          {trace.steps.map((step, index) => (
+            <li key={`${index}-${step.tool}`}>
               <div className="mcp-step-head">
-                <strong>{step.tool}</strong>
+                <strong>
+                  <span className="mcp-step-num">{index + 1}.</span> {step.tool}
+                </strong>
                 <span>{step.duration_ms}ms</span>
               </div>
               <p className="summary-text">{step.output_summary}</p>

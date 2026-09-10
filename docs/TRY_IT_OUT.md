@@ -44,7 +44,7 @@ curl http://127.0.0.1:8000/api/v1/health
 
 Expected response:
 ```json
-{"status":"ok","splunk_mode":"mock","graph_nodes":0,"graph_edges":0}
+{"status":"ok","splunk_mode":"mock","mcp_mode":"mock-mcp","graph_nodes":0,"graph_edges":0}
 ```
 
 ## 3. Start the frontend
@@ -70,12 +70,13 @@ Click **Analyze** (or press Enter). Within seconds you should see:
 | Panel | What to look for |
 |-------|------------------|
 | **Root Cause** | Authentication latency +320% after Deployment v4.2 |
-| **Operational Knowledge Graph** | Deployment → Auth Service → Login failures → Portal → Complaints |
-| **Causal Chain** | 5 linked steps, each with Splunk event count |
-| **Historical Patterns** | INC-2841 (March) and INC-2910 (April) with topology match % |
+| **Agent investigation** | MCP steps: `generate_spl` → `run_splunk_query` (+ indexes/info) and generated SPL |
+| **Service map** | Deployment → Auth Service → Login failures → tickets → Complaints (drag nodes) |
+| **Causal Chain** | Linked steps, each with Splunk event count |
+| **Prior incidents** | INC-2841 and INC-2910 with match % |
 | **Impact** | ~18,000 affected users, +240% ticket volume |
-| **Splunk Evidence** | 8 events — click **View in Splunk** on any row |
-| **Predictive Signal** | Payment API degradation warning at the bottom |
+| **Splunk Evidence** | Events — click **Open in Splunk** on any row |
+| **Early warning** | Payment API degradation banner (separate signal) |
 
 ## 5. Try other queries
 

@@ -371,6 +371,11 @@ input {
   margin-bottom: 0.65rem;
 }
 
+.mcp-step-num {
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
 .mcp-step-head {
   display: flex;
   justify-content: space-between;
