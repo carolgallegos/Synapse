@@ -94,6 +94,11 @@ export default function App() {
     if (bestNode) setSelectedNodeId(bestNode);
   }
 
+  function dataSourceLabel(snapshot: { splunk_mode: string } | null): string {
+    if (!snapshot) return "Connecting";
+    return snapshot.splunk_mode === "live" ? "Splunk live" : "Demo data";
+  }
+
   function handleExport() {
     if (!report) return;
     downloadReport(buildIncidentReport(report, risk, tab), `synapse-report-${Date.now()}.md`);
@@ -129,9 +134,12 @@ export default function App() {
               Export report
             </button>
           )}
-          <div className="status-pill">
+          <div
+            className="status-pill"
+            title={health ? `Splunk ${health.splunk_mode}` : "Waiting for backend"}
+          >
             <span className="status-dot" />
-            Splunk {health?.splunk_mode ?? "—"} · MCP {health?.mcp_mode ?? "—"}
+            {dataSourceLabel(health)}
           </div>
         </div>
       </header>
