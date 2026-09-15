@@ -24,16 +24,25 @@ export function EvidencePanel({ events, selectedNodeId, selectedEventId, onSelec
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
-  const visible = selectedNodeId
+  const filtered = selectedNodeId
     ? events.filter((event) => eventMatchesNode(selectedNodeId, event))
     : events;
+  const list = selectedNodeId ? filtered : events;
 
   return (
     <div className="evidence-list">
-      {selectedNodeId && visible.length === 0 && (
-        <p className="summary-text">No direct Splunk events for this node.</p>
+      {selectedNodeId ? (
+        <p className="evidence-filter-note">
+          {list.length === 0
+            ? "No Splunk events match this node. Clear the selection to see all evidence."
+            : `${list.length} event${list.length === 1 ? "" : "s"} linked to the selected node.`}
+        </p>
+      ) : (
+        <p className="evidence-filter-note">
+          {list.length} event{list.length === 1 ? "" : "s"} from this investigation.
+        </p>
       )}
-      {(visible.length ? visible : events).map((event) => {
+      {list.map((event) => {
         const highlighted =
           selectedEventId === event.event_id ||
           (selectedNodeId ? eventMatchesNode(selectedNodeId, event) : false);

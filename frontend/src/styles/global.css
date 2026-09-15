@@ -646,6 +646,12 @@ input {
   overflow-y: auto;
 }
 
+.evidence-filter-note {
+  margin: 0 0 0.15rem;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+
 .evidence-item {
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
