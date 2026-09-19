@@ -509,6 +509,12 @@ input {
   padding: 0.25rem 0;
 }
 
+.timeline-window {
+  margin: 0 0 0.65rem;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+
 .timeline-track {
   position: relative;
   height: 24px;

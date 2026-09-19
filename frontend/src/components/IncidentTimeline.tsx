@@ -17,9 +17,23 @@ export function IncidentTimeline({ events, selectedEventId, onSelectEvent }: Pro
   const start = new Date(sorted[0].timestamp).getTime();
   const end = new Date(sorted[sorted.length - 1].timestamp).getTime();
   const span = Math.max(end - start, 1);
+  const windowLabel = `${new Date(start).toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })} – ${new Date(end).toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
 
   return (
     <div className="incident-timeline">
+      <p className="timeline-window">
+        {sorted.length} event{sorted.length === 1 ? "" : "s"} · {windowLabel}
+      </p>
       <div className="timeline-track">
         {sorted.map((event) => {
           const pct = ((new Date(event.timestamp).getTime() - start) / span) * 100;
