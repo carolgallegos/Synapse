@@ -53,6 +53,7 @@ Ask: **"Why are customer complaints increasing?"**
 Synapse returns:
 
 - Root cause: Authentication latency +320% after Deployment v4.2
+- Agent investigation: MCP steps (`generate_spl` → `run_splunk_query`) with generated SPL
 - Causal chain: Deployment → Auth Service → Login failures → Tickets → Complaints
 - Historical matches: INC-2841 (March), INC-2910 (April)
 - Impact: 18,000 users, +240% ticket volume

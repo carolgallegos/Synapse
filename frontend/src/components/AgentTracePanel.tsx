@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { AgentTrace } from "../api";
 
 interface Props {
@@ -5,6 +6,19 @@ interface Props {
 }
 
 export function AgentTracePanel({ trace }: Props) {
+  const [copied, setCopied] = useState(false);
+
+  async function copySpl() {
+    if (!trace.generated_spl) return;
+    try {
+      await navigator.clipboard.writeText(trace.generated_spl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      setCopied(false);
+    }
+  }
+
   return (
     <div className="panel panel-mcp">
       <div className="panel-header">
@@ -13,9 +27,15 @@ export function AgentTracePanel({ trace }: Props) {
       </div>
       <div className="panel-body">
         {trace.generated_spl && (
-          <p className="mcp-spl">
-            <strong>Generated SPL:</strong> <code>{trace.generated_spl}</code>
-          </p>
+          <div className="mcp-spl">
+            <div className="mcp-spl-head">
+              <strong>Generated SPL</strong>
+              <button type="button" className="mcp-copy" onClick={copySpl}>
+                {copied ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <code>{trace.generated_spl}</code>
+          </div>
         )}
         <ol className="mcp-steps">
           {trace.steps.map((step, index) => (
