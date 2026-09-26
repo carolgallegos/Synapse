@@ -13,6 +13,26 @@ export function buildIncidentReport(
     "ROOT CAUSE",
     report.root_cause,
     "",
+  ];
+
+  if (report.agent_trace) {
+    lines.push(
+      "AGENT INVESTIGATION",
+      `  Mode: ${report.agent_trace.mode}`,
+    );
+    if (report.agent_trace.generated_spl) {
+      lines.push(`  Generated SPL: ${report.agent_trace.generated_spl}`);
+    }
+    lines.push(
+      ...report.agent_trace.steps.map(
+        (step, index) =>
+          `  ${index + 1}. ${step.tool} (${step.duration_ms}ms) — ${step.output_summary}`,
+      ),
+      "",
+    );
+  }
+
+  lines.push(
     "CAUSAL CHAIN",
     ...report.causal_chain.map(
       (link) =>
